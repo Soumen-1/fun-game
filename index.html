@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<title>Life Math - Discover Your Stats</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<style>
+  /* Reset and base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #36D1DC 0%, #5B86E5 100%);
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  a:hover, button:hover {
+    opacity: 0.85;
+  }
+  /* Container */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Header */
+  header {
+    background: rgba(255 255 255 / 0.75);
+    backdrop-filter: saturate(180%) blur(10px);
+    padding: 12px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 8px 16px rgb(0 0 0 / 0.07);
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header .logo {
+    font-weight: 700;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #5B86E5, #36D1DC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header nav {
+    display: none;
+  }
+  /* Version badge */
+  header .version {
+    font-size: 0.8rem;
+    color: #444;
+  }
+
+  /* Footer */
+  footer {
+    background: rgba(255 255 255 / 0.75);
+    backdrop-filter: saturate(180%) blur(10px);
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 20px 20px 24px;
+    box-shadow: 0 -8px 16px rgb(0 0 0 / 0.05);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    color: #555;
+    flex-shrink: 0;
+  }
+  footer nav {
+    margin-top: 12px;
+  }
+  footer nav a {
+    margin: 0 12px;
+    font-weight: 600;
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+  }
+  footer nav a:hover {
+    color: #36D1DC;
+  }
+
+  /* Pages */
+  .page {
+    display: none;
+    flex-direction: column;
+    animation: fadeInUp 0.5s ease forwards;
+  }
+  .page.active {
+    display: flex;
+  }
+  @keyframes fadeInUp {
+    from {
+      opacity: 0; transform: translateY(15px);
+    }
+    to {
+      opacity: 1; transform: translateY(0);
+    }
+  }
+
+  /* Landing Page */
+  #landing .header-text {
+    margin-top: 3rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 2rem;
+    background: linear-gradient(135deg, #36D1DC, #5B86E5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: colorPulse 4s infinite alternate;
+  }
+  @keyframes colorPulse {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.15); }
+  }
+  #landing .welcome-subtext {
+    margin-top: 1rem;
+    font-size: 1.25rem;
+    color: #eee;
+    text-shadow: 0 0 10px rgb(0 0 0 / 0.15);
+  }
+  #landing .btn-start {
+    margin: 3rem auto 2rem;
+    padding: 15px 36px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 32px;
+    color: white;
+    background: linear-gradient(135deg, #5B86E5, #36D1DC);
+    box-shadow: 0 6px 14px rgb(54 209 220 / 0.45);
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #landing .btn-start:hover {
+    transform: scale(1.05);
+    box-shadow: 0 9px 22px rgb(54 209 220 / 0.7);
+  }
+  /* Emoji pulse */
+  #landing .btn-start .emoji {
+    display: inline-block;
+    animation: bounce 1.6s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* DOB Picker section */
+  #dob-picker {
+    background: rgba(255 255 255 / 0.9);
+    padding: 24px 24px 32px;
+    margin-top: 3rem;
+    border-radius: 24px;
+    box-shadow: 0 20px 35px rgb(0 0 0 / 0.1);
+  }
+  #dob-picker label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    user-select: none;
+  }
+  #dob-picker input[type=date] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    font-size: 1rem;
+    outline-offset: 3px;
+    transition: border-color 0.3s ease;
+  }
+  #dob-picker input[type=date]:focus {
+    border-color: #36D1DC;
+  }
+  #dob-picker .btn-save {
+    margin-top: 16px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #36D1DC, #5B86E5);
+    border: none;
+    border-radius: 32px;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 9px 15px rgb(54 209 220 / 0.5);
+    transition: transform 0.2s ease;
+  }
+  #dob-picker .btn-save:hover:not(:disabled) {
+    transform: scale(1.05);
+  }
+  #dob-picker .btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Tools list */
+  #tools-list {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    gap: 20px;
+  }
+  .tool-card {
+    background: rgba(255 255 255 / 0.95);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.08);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .tool-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 42px rgb(0 0 0 / 0.18);
+  }
+  .tool-card .emoji {
+    font-size: 3rem;
+    margin-bottom: 16px;
+  }
+  .tool-card h3 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-align: center;
+    color: #333;
+  }
+  .tool-card p {
+    margin-top: 8px;
+    color: #555;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  /* Individual tool page */
+  .tool-page {
+    background: rgba(255 255 255 / 0.98);
+    border-radius: 24px;
+    padding: 24px 32px 32px;
+    box-shadow: 0 20px 35px rgb(0 0 0 / 0.07);
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .tool-page h2 {
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: #4A4A4A;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .tool-page .emoji {
+    font-size: 4rem;
+    margin-bottom: 8px;
+  }
+  .tool-page .description {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+    max-width: 600px;
+    margin-bottom: 24px;
+  }
+  .result-counter {
+    font-weight: 900;
+    font-size: 3rem;
+    color: #36D1DC;
+    letter-spacing: 0.07em;
+    min-height: 4rem;
+    margin: 32px 0;
+    text-align: center;
+  }
+  .back-button {
+    background: #36D1DC;
+    border: none;
+    color: white;
+    border-radius: 32px;
+    font-weight: 700;
+    padding: 14px 32px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .back-button:hover {
+    background: #2cadc8;
+  }
+
+  /* Suggested Queries */
+  .suggestions {
+    margin-top: 48px;
+    width: 100%;
+  }
+  .suggestions h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .suggestion-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  .suggestion-card {
+    background: #36D1DC;
+    padding: 16px 24px;
+    border-radius: 32px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgb(54 209 220 / 0.6);
+    flex: 1 0 200px;
+    max-width: 260px;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .suggestion-card:hover {
+    background: #49d2e2;
+  }
+  .suggestion-card .emoji {
+    font-size: 1.4rem;
+  }
+
+  /* Search bar */
+  .search-bar {
+    position: relative;
+    margin: 30px 0 10px;
+    max-width: 500px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .search-bar input {
+    width: 100%;
+    padding: 14px 48px 14px 16px;
+    font-size: 1rem;
+    border-radius: 24px;
+    border: none;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.12);
+    outline-offset: 4px;
+    outline-color: #36D1DC;
+  }
+  .search-bar .material-icons {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #36D1DC;
+    font-size: 24px;
+    pointer-events: none;
+  }
+  /* Search results */
+  .search-results {
+    max-width: 500px;
+    margin: 0 auto 40px;
+    margin-top: 12px;
+  }
+  .search-result-item {
+    background: white;
+    box-shadow: 0 6px 14px rgb(54 209 220 / 0.3);
+    border-radius: 20px;
+    padding: 14px 20px;
+    margin-bottom: 10px;
+    cursor: default;
+    font-weight: 600;
+    color: #111;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .search-result-item .emoji {
+    font-size: 1.4rem;
+    margin-left: 12px;
+  }
+
+  /* Lifestyle quiz page */
+  #lifestyle-quiz {
+    margin-top: 2rem;
+    background: rgba(255 255 255 / 0.95);
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgb(0 0 0 / 0.1);
+    padding: 24px 32px 32px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #lifestyle-quiz h2 {
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: #444;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  #lifestyle-quiz .question {
+    margin-bottom: 24px;
+  }
+  #lifestyle-quiz label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+    color: #222;
+  }
+  #lifestyle-quiz input[type=radio] {
+    accent-color: #36D1DC;
+  }
+  #lifestyle-quiz .btn-submit {
+    margin-top: 30px;
+    width: 100%;
+    padding: 16px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    background: linear-gradient(135deg, #36D1DC, #5B86E5);
+    border: none;
+    border-radius: 32px;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgb(54 209 220 / 0.5);
+    transition: background-color 0.3s ease;
+  }
+  #lifestyle-quiz .btn-submit:hover {
+    background: #2aadcd;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    body {
+      font-size: 14px;
+    }
+    .tool-card {
+      padding: 18px 18px;
+    }
+    .tool-card .emoji {
+      font-size: 2.5rem;
+    }
+    .tool-page .emoji {
+      font-size: 3.2rem;
+    }
+    .tool-page h2 {
+      font-size: 1.4rem;
+    }
+    .result-counter {
+      font-size: 2.4rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" aria-label="Life Math Logo">Life Math</div>
+  <nav aria-label="Main navigation"></nav>
+</header>
+
+<main class="container" id="app">
+
+  <!-- Landing Page -->
+  <section id="landing" class="page active" role="main" aria-label="Welcome page">
+    <h1 class="header-text" aria-live="polite">Welcome to Life Math — discover your stats before time runs out! <span aria-hidden="true">⏳🔢</span></h1>
+    <p class="welcome-subtext">Calculate your life stats in a fun, interactive way!</p>
+    <button class="btn-start" id="start-button" aria-label="Start Life Math journey">
+      Start <span class="emoji" aria-hidden="true">🚀</span>
+    </button>
+
+    <section id="dob-picker" aria-label="Date of birth picker">
+      <label for="dob-input">Select your date of birth</label>
+      <input type="date" id="dob-input" aria-required="true" aria-describedby="dob-helper" max="" />
+      <small id="dob-helper">We will use this date for all calculations and save it locally.</small>
+      <button class="btn-save" id="dob-save-button" disabled>Save Date of Birth</button>
+    </section>
+  </section>
+
+  <!-- Tools List Page -->
+  <section id="tools-page" class="page" aria-label="Main tools navigation">
+    <h2 style="text-align:center; margin-top:1rem; font-weight: 800; font-size: 1.8rem; color: white; text-shadow: 0 0 5px rgba(0,0,0,0.25);">Your Life Math Tools</h2>
+    <div id="tools-list" role="list" aria-label="Available life math tools">
+      <!-- Cards populated by JS -->
+    </div>
+    <button class="back-button" id="back-to-landing" style="align-self:center; margin-top: 2rem;">Back to Landing</button>
+  </section>
+
+  <!-- Tool Detail Page -->
+  <section id="tool-detail" class="page" aria-label="Tool details and calculations">
+    <div class="tool-page" role="region" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
+      <div class="emoji" id="tool-emoji" aria-hidden="true">⏳</div>
+      <h2 id="tool-title">Life Time Left</h2>
+      <p class="description" id="tool-description">
+        Let's calculate your estimated time left in life based on your age and lifestyle.
+      </p>
+      <div class="result-counter" id="result-counter" aria-live="polite" aria-atomic="true">Calculating...</div>
+      <button class="back-button" id="tool-back-button" aria-label="Go back to tools list">Back to Tools</button>
+    </div>
+    <div class="suggestions" aria-label="Suggested queries">
+      <h3>Try these funny queries:</h3>
+      <div class="suggestion-cards" id="suggestion-cards">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Lifestyle Quiz Page -->
+  <section id="lifestyle-quiz" class="page" aria-label="Lifestyle quiz" role="form" aria-live="polite">
+    <h2>Tell us about your lifestyle</h2>
+    <form id="quiz-form">
+      <div class="question">
+        <strong>Do you smoke?</strong>
+        <label><input type="radio" name="smoke" value="none" required />No, never</label>
+        <label><input type="radio" name="smoke" value="occasionally" />Occasionally</label>
+        <label><input type="radio" name="smoke" value="regularly" />Regularly</label>
+      </div>
+      <div class="question">
+        <strong>How often do you exercise per week?</strong>
+        <label><input type="radio" name="exercise" value="none" required />None</label>
+        <label><input type="radio" name="exercise" value="moderate" />1-3 times</label>
+        <label><input type="radio" name="exercise" value="frequent" />4+ times</label>
+      </div>
+      <div class="question">
+        <strong>How healthy is your diet?</strong>
+        <label><input type="radio" name="food" value="poor" required />Poor</label>
+        <label><input type="radio" name="food" value="average" />Average</label>
+        <label><input type="radio" name="food" value="healthy" />Healthy</label>
+      </div>
+      <div class="question">
+        <strong>How many hours do you sleep daily on average?</strong>
+        <label><input type="radio" name="sleep" value="less6" required />Less than 6</label>
+        <label><input type="radio" name="sleep" value="6to8" />6-8</label>
+        <label><input type="radio" name="sleep" value="more8" />More than 8</label>
+      </div>
+      <button type="submit" class="btn-submit">Save Lifestyle</button>
+    </form>
+    <button class="back-button" id="quiz-back-button" style="margin-top: 20px;">Back to Tools</button>
+  </section>
+
+  <!-- Search Results Page -->
+  <section id="search-results" class="page" aria-label="Search results for queries">
+    <h2 style="text-align:center; margin-top:1rem; font-weight: 800; font-size: 1.8rem;">Search Results</h2>
+    <div class="search-bar" style="margin-bottom: 1rem;">
+      <input type="search" id="search-input" aria-label="Search life math queries" placeholder="Try: How many times I blinked?" autocomplete="off" />
+      <span class="material-icons" aria-hidden="true">search</span>
+    </div>
+    <div id="search-results-list" class="search-results" role="list"></div>
+    <button class="back-button" id="search-back-button" style="align-self:center; margin-top: 2rem;">Back to Tools</button>
+  </section>
+
+</main>
+
+<footer>
+  <div>© 2024 Life Math. All rights reserved.</div>
+  <nav aria-label="Footer links">
+    <a href="#" id="footer-about">About</a> •
+    <a href="#" id="footer-contact">Contact</a> •
+    <span>More Stats Coming Soon!</span>
+  </nav>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+
+  // App state and constants
+  const app = document.getElementById('app');
+  const pages = {
+    landing: document.getElementById('landing'),
+    tools: document.getElementById('tools-page'),
+    toolDetail: document.getElementById('tool-detail'),
+    quiz: document.getElementById('lifestyle-quiz'),
+    searchResults: document.getElementById('search-results'),
+  };
+
+  // Buttons/inputs references
+  const startButton = document.getElementById('start-button');
+  const dobInput = document.getElementById('dob-input');
+  const dobSaveButton = document.getElementById('dob-save-button');
+  const backToLandingBtn = document.getElementById('back-to-landing');
+  const toolBackBtn = document.getElementById('tool-back-button');
+  const quizBackBtn = document.getElementById('quiz-back-button');
+  const quizForm = document.getElementById('quiz-form');
+  const toolsList = document.getElementById('tools-list');
+  const toolTitle = document.getElementById('tool-title');
+  const toolEmoji = document.getElementById('tool-emoji');
+  const toolDescription = document.getElementById('tool-description');
+  const resultCounter = document.getElementById('result-counter');
+  const suggestionCards = document.getElementById('suggestion-cards');
+  const searchInput = document.getElementById('search-input');
+  const searchResultsList = document.getElementById('search-results-list');
+  const searchBackBtn = document.getElementById('search-back-button');
+
+  // Footer links
+  const footerAbout = document.getElementById('footer-about');
+  const footerContact = document.getElementById('footer-contact');
+
+  // Real data storage keys
+  const STORAGE_KEYS = {
+    DOB: 'lifeMath_dob',
+    LIFESTYLE: 'lifeMath_lifestyle',
+  };
+
+  // Tools definition
+  const TOOLS = [
+    {
+      id: 'lifeTimeLeft',
+      emoji: '⏳',
+      title: 'Life Time Left',
+      description: 'Calculate your estimated time left in life based on your age and lifestyle.',
+      calculate: calculateLifeTimeLeft,
+    },
+    {
+      id: 'totalHeartbeat',
+      emoji: '❤️',
+      title: 'Total Heartbeats',
+      description: 'Estimate how many times your heart has beaten since birth.',
+      calculate: calculateTotalHeartbeats,
+    },
+    {
+      id: 'timeSleeping',
+      emoji: '😴',
+      title: 'Time Spent Sleeping',
+      description: 'Estimate how much time you have spent sleeping so far.',
+      calculate: calculateTimeSleeping,
+    },
+    {
+      id: 'stepsWalked',
+      emoji: '👟',
+      title: 'Steps Walked',
+      description: 'Estimate total steps you have walked so far.',
+      calculate: calculateStepsWalked,
+    },
+    {
+      id: 'estimatedLaughs',
+      emoji: '😂',
+      title: 'Estimated Laughs',
+      description: 'Estimate how many times you have laughed in your life.',
+      calculate: calculateEstimatedLaughs,
+    },
+    {
+      id: 'screenTime',
+      emoji: '📱',
+      title: 'Screen Time',
+      description: 'Input your average daily screen time to estimate your total hours on screens.',
+      manualInput: true,
+      calculate: calculateScreenTime,
+    },
+    {
+      id: 'musicTime',
+      emoji: '🎧',
+      title: 'Music Time',
+      description: 'Input your average daily music listening time to estimate your total hours spent enjoying music.',
+      manualInput: true,
+      calculate: calculateMusicTime,
+    },
+    {
+      id: 'upcomingMilestones',
+      emoji: '🎯',
+      title: 'Upcoming Milestones',
+      description: 'Discover your upcoming life milestones like the 10,000th day and the 1 billionth second!',
+      calculate: calculateUpcomingMilestones,
+      specialResults: true,
+    },
+  ];
+
+  // Suggestions queries for search
+  const SUGGESTIONS = [
+    { query: 'How many times I blinked?', answer: 'Approximately 438 million times!', emoji: '👁️' },
+    { query: 'How many times I yawned?', answer: 'About 1,026,000 yawns in your life!', emoji: '🥱' },
+    { query: 'How many steps I walked?', answer: 'An estimated 500 million steps walked!', emoji: '👣' },
+    { query: 'How many times I laughed?', answer: 'Roughly 1 million laughs have brightened your days!', emoji: '😂' },
+    { query: 'How many hours I spent sleeping?', answer: 'You have slept around 76,000 hours!', emoji: '💤' },
+    { query: 'How many heartbeats I had?', answer: 'Your heart has beaten about 2.5 billion times!', emoji: '❤️' },
+    { query: 'How many seconds I lived?', answer: 'You have lived around 941 million seconds!', emoji: '⏰' },
+  ];
+
+  // App state variables
+  let dob = null;            // Date object
+  let lifestyle = null;      // object with quiz answers
+  let currentTool = null;    // tool object for tool detail page
+  let manualInputValue = null; // for tools needing manual input
+
+  // Initialize max date for DOB input (today)
+  function setMaxDOB() {
+    const today = new Date();
+    dobInput.max = today.toISOString().split('T')[0];
+  }
+  setMaxDOB();
+
+  // Show only one page at a time
+  function showPage(pageId) {
+    Object.values(pages).forEach(p => p.classList.remove('active'));
+    if (pages[pageId]) {
+      pages[pageId].classList.add('active');
+      // Reset and focus inputs on specific pages
+      if(pageId === 'landing') dobInput.focus();
+      if(pageId === 'searchResults') {
+        searchInput.focus();
+        searchResultsList.innerHTML = '';
+        searchInput.value = '';
+      }
+      if(pageId === 'tools') window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  // Load stored DOB and Lifestyle from localStorage
+  function loadStoredData() {
+    const storedDob = localStorage.getItem(STORAGE_KEYS.DOB);
+    if (storedDob) {
+      dob = new Date(storedDob);
+      dobInput.value = storedDob;
+      dobSaveButton.disabled = true;
+    }
+    const storedLifestyle = localStorage.getItem(STORAGE_KEYS.LIFESTYLE);
+    if (storedLifestyle) {
+      try {
+        lifestyle = JSON.parse(storedLifestyle);
+      } catch {
+        lifestyle = null;
+      }
+    }
+  }
+
+  // Save DOB to localStorage
+  function saveDOB() {
+    if (!dobInput.value) return;
+    dob = new Date(dobInput.value);
+    localStorage.setItem(STORAGE_KEYS.DOB, dobInput.value);
+    dobSaveButton.disabled = true;
+    alert('Date of birth saved! You can now explore the tools.');
+    showToolsPage();
+  }
+
+  // Enable save button if valid
+  function checkDOBInput() {
+    const val = dobInput.value;
+    dobSaveButton.disabled = !val || new Date(val) > new Date();
+  }
+
+  // Show tools list page, dynamically populate cards
+  function showToolsPage() {
+    populateToolsList();
+    showPage('tools');
+  }
+
+  // Populate tools list cards
+  function populateToolsList() {
+    toolsList.innerHTML = '';
+    TOOLS.forEach(tool => {
+      const card = document.createElement('div');
+      card.className = 'tool-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'listitem');
+      card.setAttribute('aria-label', tool.title);
+      card.innerHTML = `
+        <div class="emoji" aria-hidden="true">${tool.emoji}</div>
+        <h3>${tool.title}</h3>
+        <p>${tool.description}</p>
+      `;
+      card.addEventListener('click', () => openTool(tool.id));
+      card.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openTool(tool.id);
+        }
+      });
+      toolsList.appendChild(card);
+    });
+  }
+
+  // Open a tool detail page by tool ID
+  function openTool(toolId) {
+    const tool = TOOLS.find(t => t.id === toolId);
+    if (!tool) return;
+    currentTool = tool;
+    manualInputValue = null;
+    setupToolPage(tool);
+    showPage('toolDetail');
+  }
+
+  // Setup the tool page UI and start calculations or show manual input if required
+  function setupToolPage(tool) {
+    toolTitle.textContent = tool.title;
+    toolEmoji.textContent = tool.emoji;
+    toolDescription.textContent = tool.description;
+    resultCounter.textContent = 'Calculating...';
+
+    // Clear suggestions cards
+    suggestionCards.innerHTML = '';
+    populateSuggestionCards();
+
+    if (tool.manualInput) {
+      // Show prompt for manual input and compute on input
+
+      // Create manual input UI within tool page (below description)
+      if (!document.getElementById('manual-input-container')) {
+        const container = document.createElement('div');
+        container.id = 'manual-input-container';
+        container.style.marginTop = '1.5rem';
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = 0;
+        input.placeholder = 'Enter average daily minutes';
+        input.id = 'manual-input';
+        input.style.padding = '12px 16px';
+        input.style.borderRadius = '12px';
+        input.style.border = '2px solid #36D1DC';
+        input.style.fontSize = '1.1rem';
+        input.setAttribute('aria-label', `Input average daily minutes for ${tool.title}`);
+        container.appendChild(input);
+
+        const btn = document.createElement('button');
+        btn.textContent = 'Calculate';
+        btn.className = 'btn-save';
+        btn.style.marginTop = '12px';
+        btn.disabled = true;
+        btn.setAttribute('aria-disabled', 'true');
+        container.appendChild(btn);
+
+        input.addEventListener('input', () => {
+          if (input.value && parseInt(input.value) >= 0) {
+            btn.disabled = false;
+            btn.setAttribute('aria-disabled', 'false');
+          } else {
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+          }
+        });
+
+        btn.addEventListener('click', () => {
+          manualInputValue = parseInt(input.value);
+          btn.disabled = true;
+          btn.textContent = 'Calculating...';
+          runAnimatedCalculation(tool, manualInputValue, () => {
+            btn.textContent = 'Calculate';
+            btn.disabled = false;
+            btn.setAttribute('aria-disabled', 'false');
+          });
+        });
+
+        document.querySelector('.tool-page').appendChild(container);
+      } else {
+        // Show manual input container
+        const container = document.getElementById('manual-input-container');
+        container.querySelector('input').value = '';
+        container.querySelector('button').disabled = true;
+        container.style.display = '';
+      }
+      resultCounter.textContent = '';
+    } else {
+      // Hide manual input container if present
+      const container = document.getElementById('manual-input-container');
+      if (container) container.style.display = 'none';
+      runAnimatedCalculation(tool);
+    }
+  }
+
+  // Populate suggestion cards under tool detail page
+  function populateSuggestionCards() {
+    suggestionCards.innerHTML = '';
+    SUGGESTIONS.forEach(sug => {
+      const card = document.createElement('div');
+      card.className = 'suggestion-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `Suggestion: ${sug.query}`);
+      card.innerHTML = `<span>${sug.query}</span><span class="emoji" aria-hidden="true">${sug.emoji}</span>`;
+      card.addEventListener('click', () => openSearchResults(sug.query));
+      card.addEventListener('keypress', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openSearchResults(sug.query);
+        }
+      });
+      suggestionCards.appendChild(card);
+    });
+  }
+
+  // Open search results page for a query string
+  function openSearchResults(query) {
+    showPage('searchResults');
+    searchInput.value = query;
+    displaySearchResults(query);
+  }
+
+  // Display search results filtered by query
+  function displaySearchResults(query) {
+    searchResultsList.innerHTML = '';
+    const lowerQuery = query.toLowerCase();
+    const results = SUGGESTIONS.filter(s =>
+      s.query.toLowerCase().includes(lowerQuery)
+    );
+    if (results.length === 0) {
+      const noRes = document.createElement('div');
+      noRes.textContent = 'No funny stats found. Try a different query!';
+      noRes.style.textAlign = 'center';
+      noRes.style.color = '#999';
+      noRes.style.marginTop = '20px';
+      searchResultsList.appendChild(noRes);
+      return;
+    }
+    results.forEach(res => {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.innerHTML = `<span>${res.query}: ${res.answer}</span><span class="emoji" aria-hidden="true">${res.emoji}</span>`;
+      searchResultsList.appendChild(div);
+    });
+  }
+
+  // Run animated calculation with optional manual input value and callback after completion
+  function runAnimatedCalculation(tool, manualValue = null, callback) {
+    const animationDuration = 2000; // ms
+    const updateInterval = 100; // ms
+    let startTimestamp = null;
+
+    // Calculate final result
+    let finalResult = tool.calculate(dob, lifestyle, manualValue);
+
+    // If specialResults return an array to show multiple lines
+    if (tool.specialResults && Array.isArray(finalResult)) {
+      // Stop any old animation
+      resultCounter.textContent = '';
+      finalResult.forEach((lineObj, index) => {
+        const lineSpan = document.createElement('div');
+        lineSpan.textContent = lineObj.text;
+        lineSpan.style.marginBottom = '12px';
+        if (index === 0) {
+          resultCounter.appendChild(lineSpan);
+        } else {
+          resultCounter.appendChild(lineSpan);
+        }
+      });
+      if (callback) callback();
+      return;
+    }
+
+    if (typeof finalResult !== 'number') finalResult = 0;
+
+    function step(timestamp) {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = timestamp - startTimestamp;
+      const progress = Math.min(elapsed / animationDuration, 1);
+      const value = Math.floor(finalResult * progress);
+      let displayText = value.toLocaleString();
+
+      if (tool.id === 'lifeTimeLeft') {
+        // Show as days, hours, minutes format
+        displayText = formatTimeLeft(value);
+      } else if (tool.id === 'upcomingMilestones') {
+        // handled specially but fallback
+      }
+      resultCounter.textContent = displayText;
+
+      if (elapsed < animationDuration) {
+        window.requestAnimationFrame(step);
+      } else {
+        resultCounter.textContent = tool.specialResults ? finalResult : finalResult.toLocaleString();
+        if (callback) callback();
+      }
+    }
+    window.requestAnimationFrame(step);
+  }
+
+  // Format time left given total minutes number (approx)
+  function formatTimeLeft(minutes) {
+    const days = Math.floor(minutes / (60 * 24));
+    const hours = Math.floor((minutes % (60 * 24)) / 60);
+    const mins = Math.floor(minutes % 60);
+    let str = '';
+    if (days > 0) str += `${days}d `;
+    if (hours > 0) str += `${hours}h `;
+    str += `${mins}m`;
+    return str;
+  }
+
+  // Calculations for tools
+
+  // 1. Life Time Left - Estimate minutes left based on age and lifestyle & average life expectancy 80 years base
+  function calculateLifeTimeLeft(dob, lifestyle) {
+    if (!dob) return 0;
+    const now = new Date();
+    let ageInYears = (now - dob) / (1000 * 60 * 60 * 24 * 365.25);
+    ageInYears = Math.max(0, ageInYears);
+    const baseLifeExpectancy = 80;
+
+    // Adjust life expectancy based on lifestyle quiz
+    let lifeExpectancyAdj = baseLifeExpectancy;
+    if (lifestyle) {
+      // Smoke: none +2 years, occasional 0, regularly -7 years approx
+      switch (lifestyle.smoke) {
+        case 'none': lifeExpectancyAdj += 2; break;
+        case 'regularly': lifeExpectancyAdj -= 7; break;
+      }
+      // Exercise: none -4, moderate +2, frequent +5
+      switch (lifestyle.exercise) {
+        case 'none': lifeExpectancyAdj -= 4; break;
+        case 'moderate': lifeExpectancyAdj += 2; break;
+        case 'frequent': lifeExpectancyAdj += 5; break;
+      }
+      // Food: poor -3, average 0, healthy +4
+      switch (lifestyle.food) {
+        case 'poor': lifeExpectancyAdj -= 3; break;
+        case 'healthy': lifeExpectancyAdj += 4; break;
+      }
+      // Sleep: less6 -2, 6to8 0, more8 +2
+      switch (lifestyle.sleep) {
+        case 'less6': lifeExpectancyAdj -= 2; break;
+        case 'more8': lifeExpectancyAdj += 2; break;
+      }
+    }
+
+    lifeExpectancyAdj = Math.max(50, Math.min(95, lifeExpectancyAdj));
+    const yearsLeft = Math.max(0, lifeExpectancyAdj - ageInYears);
+    const minutesLeft = Math.floor(yearsLeft * 365.25 * 24 * 60);
+    return minutesLeft;
+  }
+
+  // 2. Total Heartbeats - estimate total beats since birth assuming avg 70 bpm, lifestyle affects bpm
+  function calculateTotalHeartbeats(dob, lifestyle) {
+    if (!dob) return 0;
+    const bpmBase = 70;
+    const now = new Date();
+    const minutesLived = (now - dob) / (1000 * 60);
+    // Adjust bpm by lifestyle: smoking +5 bpm, exercise -5 bpm
+    let bpm = bpmBase;
+    if (lifestyle) {
+      if (lifestyle.smoke === 'regularly') bpm += 7;
+      if (lifestyle.exercise === 'frequent') bpm -= 5;
+    }
+    bpm = Math.max(50, bpm);
+    return Math.floor(minutesLived * bpm);
+  }
+
+  // 3. Time Spent Sleeping - estimate total hours slept using average sleep hours from lifestyle (default 7)
+  function calculateTimeSleeping(dob, lifestyle) {
+    if (!dob) return 0;
+    const now = new Date();
+    const hoursLived = (now - dob) / (1000 * 60 * 60);
+    let avgSleepHours = 7;
+    if (lifestyle) {
+      switch (lifestyle.sleep) {
+        case 'less6': avgSleepHours = 5.5; break;
+        case '6to8': avgSleepHours = 7; break;
+        case 'more8': avgSleepHours = 8.5; break;
+      }
+    }
+    return Math.floor(hoursLived * avgSleepHours);
+  }
+
+  // 4. Steps Walked - estimate steps assuming 5000 steps/day average + 1000 steps per exercise day
+  function calculateStepsWalked(dob, lifestyle) {
+    if (!dob) return 0;
+    const now = new Date();
+    const daysLived = (now - dob) / (1000 * 60 * 60 * 24);
+    let stepsPerDay = 5000;
+    if (lifestyle) {
+      if (lifestyle.exercise === 'frequent') stepsPerDay += 1500;
+      else if (lifestyle.exercise === 'moderate') stepsPerDay += 700;
+      else stepsPerDay = 3000;
+    }
+    return Math.floor(daysLived * stepsPerDay);
+  }
+
+  // 5. Estimated Laughs - assume avg 16 laughs/day for first 25 years, 8 for after
+  function calculateEstimatedLaughs(dob, lifestyle) {
+    if (!dob) return 0;
+    const now = new Date();
+    const years = (now - dob) / (1000 * 60 * 60 * 24 * 365.25);
+    const laughsFirst25 = Math.min(years, 25) * 16 * 365.25;
+    const laughsAfter25 = Math.max(0, years - 25) * 8 * 365.25;
+    return Math.floor(laughsFirst25 + laughsAfter25);
+  }
+
+  // 6. Screen Time (manual input) - total hours based on daily minutes input * days lived
+  function calculateScreenTime(dob, lifestyle, dailyMinutes) {
+    if (!dob) return 0;
+    if (dailyMinutes == null || isNaN(dailyMinutes)) return 0;
+    const now = new Date();
+    const daysLived = (now - dob) / (1000 * 60 * 60 * 24);
+    return Math.floor((dailyMinutes / 60) * daysLived);
+  }
+
+  // 7. Music Time (manual input)
+  function calculateMusicTime(dob, lifestyle, dailyMinutes) {
+    if (!dob) return 0;
+    if (dailyMinutes == null || isNaN(dailyMinutes)) return 0;
+    const now = new Date();
+    const daysLived = (now - dob) / (1000 * 60 * 60 * 24);
+    return Math.floor((dailyMinutes / 60) * daysLived);
+  }
+
+  // 8. Upcoming Milestones
+  function calculateUpcomingMilestones(dob) {
+    if (!dob) return ['No DOB provided'];
+
+    const now = new Date();
+    const milestones = [];
+
+    // 10,000th day
+    const daysLived = Math.floor((now - dob) / (1000 * 60 * 60 * 24));
+    const daysLeftTo10k = 10000 - daysLived;
+    if (daysLeftTo10k >= 0) {
+      const date10k = new Date(dob);
+      date10k.setDate(date10k.getDate() + 10000);
+      milestones.push({ text: `Your 10,000th day is in ${daysLeftTo10k} days, on ${date10k.toLocaleDateString()}` });
+    } else {
+      milestones.push({ text: `You've already passed your 10,000th day!` });
+    }
+
+    // 1 billionth second ~31.7 years
+    const secsLived = (now - dob) / 1000;
+    const secsLeftTo1B = 1_000_000_000 - secsLived;
+    if (secsLeftTo1B >= 0) {
+      const date1B = new Date(now.getTime() + secsLeftTo1B * 1000);
+      milestones.push({ text: `Your 1 billionth second is in approx ${Math.floor(secsLeftTo1B / (60 * 60 * 24))} days, on ${date1B.toLocaleDateString()}` });
+    } else {
+      milestones.push({ text: `You've surpassed 1 billion seconds lived!` });
+    }
+
+    // Add a couple more milestones
+    const ageYears = (now - dob) / (1000 * 60 * 60 * 24 * 365.25);
+    const next10y = Math.ceil(ageYears / 10) * 10;
+    const yearsLeftForNext10y = next10y - ageYears;
+    const dateNext10y = new Date(now.getTime() + yearsLeftForNext10y * 365.25 * 24 * 60 * 60 * 1000);
+    milestones.push({ text: `Your next decade birthday is at ${next10y} years, on ${dateNext10y.toLocaleDateString()}` });
+
+    return milestones;
+  }
+
+  // Event listeners and interactions
+
+  dobInput.addEventListener('input', checkDOBInput);
+  dobSaveButton.addEventListener('click', saveDOB);
+
+  startButton.addEventListener('click', () => {
+    if (dob) {
+      showToolsPage();
+    } else {
+      alert('Please select and save your Date of Birth first.');
+      dobInput.focus();
+    }
+  });
+
+  backToLandingBtn.addEventListener('click', () => showPage('landing'));
+  toolBackBtn.addEventListener('click', () => showPage('tools'));
+  quizBackBtn.addEventListener('click', () => showPage('tools'));
+  searchBackBtn.addEventListener('click', () => showPage('tools'));
+
+  // Quiz submit
+  quizForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(quizForm);
+    lifestyle = {
+      smoke: formData.get('smoke'),
+      exercise: formData.get('exercise'),
+      food: formData.get('food'),
+      sleep: formData.get('sleep'),
+    };
+    try {
+      localStorage.setItem(STORAGE_KEYS.LIFESTYLE, JSON.stringify(lifestyle));
+    } catch {}
+    alert('Lifestyle saved! Calculations will now reflect your choices.');
+    showToolsPage();
+  });
+
+  // Footer links handlers (open modals or alert for now)
+  footerAbout.addEventListener('click', e => {
+    e.preventDefault();
+    alert('Life Math is your playful personal stats calculator. Coming soon: shareable posters, health integrations, and more adventures!');
+  });
+  footerContact.addEventListener('click', e => {
+    e.preventDefault();
+    alert('Contact us at lifemath@example.com. We love feedback and fun ideas!');
+  });
+
+  // Search input event (keyup debounced)
+  let searchTimeout = null;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      displaySearchResults(searchInput.value);
+    }, 300);
+  });
+
+  // Open lifestyle quiz page from footer suggestion or special button (optional feature)
+  // For demo, bind 'q' key to go quiz
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'q' && (pages.tools.classList.contains('active') || pages.landing.classList.contains('active'))) {
+      e.preventDefault();
+      showPage('quiz');
+    }
+  });
+
+  // Initialization
+  function init() {
+    loadStoredData();
+
+    if(dob) {
+      dobSaveButton.disabled = true;
+    }
+    checkDOBInput();
+
+    populateToolsList();
+
+    showPage('landing');
+  }
+
+  init();
+
+  // Expose internal test helpers to window for debug if needed
+  window.LifeMath = {
+    TOOLS,
+    SUGGESTIONS,
+    calculateLifeTimeLeft,
+    calculateTotalHeartbeats,
+    calculateTimeSleeping,
+    calculateStepsWalked,
+    calculateEstimatedLaughs,
+    calculateScreenTime,
+    calculateMusicTime,
+    calculateUpcomingMilestones,
+  };
+
+})();
+</script>
+
+</body>
+</html>
+
